@@ -4,7 +4,9 @@ dotenv.config();
 import express from "express";
 import uploadRoutes from "./routes/upload.routes";
 import fileRoutes from "./routes/file.routes";
+import connectDB from "./config/db";
 
+connectDB();
 
 const app = express();
 app.use(express.json());

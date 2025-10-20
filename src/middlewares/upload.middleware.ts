@@ -21,7 +21,8 @@ export const uploadToCloudinary = async (req: any, res: any, next: any) => {
             
         //attach URL to request
         req.file.cloudinaryUrl = result.secure_url;
-
+        console.log("uploaded!");
+        
         // delete temp files
         fs.unlinkSync(req.file.path);
 
