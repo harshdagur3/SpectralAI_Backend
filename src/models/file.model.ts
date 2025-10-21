@@ -1,4 +1,4 @@
-import mongoose, {Document,IfAny,Schema } from "mongoose";
+import mongoose, {Document,Schema } from "mongoose";
 
 export interface IFile extends Document{
     filename: string;
