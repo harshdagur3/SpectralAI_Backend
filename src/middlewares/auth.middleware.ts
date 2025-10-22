@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { constants } from "../constants";
 
 export interface AuthRequest extends Request {
-    user?: { id: string; username?: string | undefined };
+    user?: { id: string; username?: string | undefined; role?: string };
 }
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
@@ -20,8 +20,8 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     if (!token) return res.status(401).json({ error: "Token missing" });
 
     try {
-        const decoded = jwt.verify(token, constants.JWT_SECRET) as { id: string; username?: string; iat?: number; exp?: number };
-        (req as AuthRequest).user = { id: decoded.id, username: decoded.username };
+        const decoded = jwt.verify(token, constants.JWT_SECRET,) as { id: string; username?: string; role: string; iat?: number; exp?: number };
+        (req as AuthRequest).user = { id: decoded.id, username: decoded.username, role: decoded.role };
         next();
     } catch (error) {
         return res.status(401).json({ error: "Invaild or expired token" })

@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { File } from "../models/file.model";
+import { AuthRequest } from "../middlewares/auth.middleware";
 
-export const uploadImage = async (req: Request, res: Response, next: NextFunction) => {
+export const uploadImage = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
         if (!req.file || !req.file.cloudinaryUrl) {
             return res.status(400).json({ message: "No file uploaded" });
@@ -12,6 +13,7 @@ export const uploadImage = async (req: Request, res: Response, next: NextFunctio
             url: req.file.cloudinaryUrl,
             size: req.file.size,
             mimetype: req.file.mimetype,
+            uploadedBy: req.user?.id,
         });
 
         res.status(200).json({
@@ -23,9 +25,14 @@ export const uploadImage = async (req: Request, res: Response, next: NextFunctio
     }
 }
 
-export const getAllFiles = async (req: Request, res: Response, next: NextFunction) => {
+export const getAllFiles = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
-        const files = await File.find().sort({ createdAt: -1 });
+        let files;
+        if (req.user?.role === "admin") {
+            files = await File.find().populate("uploadedBy", "username");
+        } else {
+            files = await File.find({ uploadedBy: req.user?.id });
+        }
         return res.status(200).json(files);
     } catch (error) {
         next(error);

@@ -1,10 +1,11 @@
-import mongoose, {Document,Schema } from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
 
-export interface IFile extends Document{
+export interface IFile extends Document {
     filename: string;
     url: string;
     size?: number;
     mimetype?: string;
+    uploadedBy: mongoose.Types.ObjectId,
     uploadedAt: Date;
 }
 
@@ -13,6 +14,7 @@ const fileSchema = new Schema<IFile>({
     url: { type: String, required: true },
     size: { type: Number },
     mimetype: { type: String },
+    uploadedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
     uploadedAt: { type: Date, default: Date.now },
 });
 
