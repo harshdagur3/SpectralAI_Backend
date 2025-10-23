@@ -8,6 +8,6 @@ const router = Router();
 
 router.post("/upload", authMiddleware, authorizeRoles("admin", "user"), upload.single("image"), uploadToCloudinary, uploadImage);
 router.get("/allfiles", authMiddleware, authorizeRoles("admin", "user"), getAllFiles);
-router.get("/:id/download", downloadFile);
+router.get("/:id/download",authMiddleware,authorizeRoles("admin","user"), downloadFile);
 
 export default router;
