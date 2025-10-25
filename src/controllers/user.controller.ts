@@ -3,6 +3,8 @@ import { User } from "../models/user.model";
 import { AuthRequest } from "../middlewares/auth.middleware";
 import bcrypt from "bcrypt";
 import { updateUserProfileSchema } from "../validations/user.validation";
+import { File } from "../models/file.model";
+import { deleteFromCloudinary } from "../utils/deleteFromCloudinary";
 
 //only admin can access
 export const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
@@ -20,6 +22,11 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
         const userId = req.params.id;
         const user = await User.findById(userId);
         if (!user) return res.status(404).json({ error: "user not found!" });
+        const userFiles = await File.find({ uploadedBy: userId });
+        for (const file of userFiles) {
+            await deleteFromCloudinary(file.publicId);
+        }
+        await File.deleteMany({ uploadedBy: userId });
         await user.deleteOne();
         return res.status(200).json({ message: "user deleted succussfully!" });
     } catch (error) {
