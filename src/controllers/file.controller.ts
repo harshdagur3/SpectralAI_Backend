@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { File } from "../models/file.model";
 import { AuthRequest } from "../middlewares/auth.middleware";
-import cloudinary from "../config/cloudinary";
+import { deleteFromCloudinary } from "../utils/deleteFromCloudinary";
 
 export const uploadImage = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
@@ -72,7 +72,7 @@ export const deleteFile = async (req: AuthRequest, res: Response, next: NextFunc
         if (req.user?.role !== "admin" && req.user?.id !== file.uploadedBy.toString()) {
             return res.status(403).json({ error: "Forbiddden!" });
         }
-        await cloudinary.uploader.destroy(file.publicId);
+        await deleteFromCloudinary(file.publicId);
         await file.deleteOne();
         return res.status(200).json({ message: "File deleted succussfully!" });
     } catch (error) {
