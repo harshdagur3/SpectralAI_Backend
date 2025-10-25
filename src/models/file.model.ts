@@ -7,6 +7,7 @@ export interface IFile extends Document {
     mimetype?: string;
     uploadedBy: mongoose.Types.ObjectId,
     uploadedAt: Date;
+    publicId: string;
 }
 
 const fileSchema = new Schema<IFile>({
@@ -16,6 +17,7 @@ const fileSchema = new Schema<IFile>({
     mimetype: { type: String },
     uploadedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
     uploadedAt: { type: Date, default: Date.now },
+    publicId: { type: String, required: true }
 });
 
 export const File = mongoose.model<IFile>("File", fileSchema);

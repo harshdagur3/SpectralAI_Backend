@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { File } from "../models/file.model";
 import { AuthRequest } from "../middlewares/auth.middleware";
+import cloudinary from "../config/cloudinary";
 
 export const uploadImage = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
@@ -11,6 +12,7 @@ export const uploadImage = async (req: AuthRequest, res: Response, next: NextFun
         const newFile = await File.create({
             filename: req.file.originalname,
             url: req.file.cloudinaryUrl,
+            publicId: req.file.cloudinaryId,
             size: req.file.size,
             mimetype: req.file.mimetype,
             uploadedBy: req.user?.id,
@@ -57,6 +59,22 @@ export const downloadFile = async (req: AuthRequest, res: Response, next: NextFu
         const downloadUrl = file.url.replace("/upload/", "/upload/fl_attachment/");
 
         return res.redirect(downloadUrl);
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const deleteFile = async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        const file = await File.findById(req.params.id);
+        if (!file) return res.status(404).json({ error: "file not found" });
+
+        if (req.user?.role !== "admin" && req.user?.id !== file.uploadedBy.toString()) {
+            return res.status(403).json({ error: "Forbiddden!" });
+        }
+        await cloudinary.uploader.destroy(file.publicId);
+        await file.deleteOne();
+        return res.status(200).json({ message: "File deleted succussfully!" });
     } catch (error) {
         next(error);
     }
