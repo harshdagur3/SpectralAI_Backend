@@ -79,3 +79,14 @@ export const deleteFile = async (req: AuthRequest, res: Response, next: NextFunc
         next(error);
     }
 }
+
+export const getFileById = async (req: AuthRequest, res: Response, next:NextFunction) => {
+    try {
+        const fileId = req.params.id;
+        const file = await File.findById(fileId);
+        if (!file) return res.status(404).json({ error: "file not found" });
+        return res.status(200).json({ succuss: true, file });
+    } catch (error) {
+        next(error);
+    }
+}

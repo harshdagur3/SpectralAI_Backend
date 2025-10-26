@@ -1,6 +1,6 @@
 import { Router } from "express";
 import upload, { uploadToCloudinary } from "../middlewares/upload.middleware";
-import { deleteFile, downloadFile, getAllFiles, uploadImage } from "../controllers/file.controller";
+import { deleteFile, downloadFile, getAllFiles, getFileById, uploadImage } from "../controllers/file.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { authorizeRoles } from "../middlewares/roles.middleware";
 
@@ -10,5 +10,6 @@ router.post("/upload", authMiddleware, authorizeRoles("admin", "user"), upload.s
 router.get("/allfiles", authMiddleware, authorizeRoles("admin", "user"), getAllFiles);
 router.get("/:id/download", authMiddleware, authorizeRoles("admin", "user"), downloadFile);
 router.delete("/:id/deletefile", authMiddleware, deleteFile);
+router.get("/:id/file", authMiddleware, authorizeRoles("admin", "user"), getFileById);
 
 export default router;
